@@ -8,8 +8,8 @@ function Btn({ icon, label, info, perSec, onClick }: {
 }) {
   return (
     <button onClick={onClick}
-      className="flex flex-1 items-center gap-3 px-4 py-2.5 rounded-lg border border-surface-border bg-surface-card
-        hover:bg-surface-hover hover:border-accent/40 active:scale-[0.99] transition-all duration-150 cursor-pointer group"
+      className="game-btn flex flex-1 items-center gap-3 px-4 py-2.5 rounded-lg border border-surface-border bg-surface-card
+        hover:bg-surface-hover hover:border-accent/40 active:scale-[0.98] transition-all duration-150 cursor-pointer group"
     >
       <span className="text-xl">{icon}</span>
       <div className="flex-1 text-left">

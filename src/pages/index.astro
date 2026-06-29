@@ -1,16 +1,17 @@
 ---
 import App from '../components/App';
+import '../styles/game.css';
 ---
 <!DOCTYPE html>
 <html lang="es" class="h-full">
   <head>
     <meta charset="utf-8" />
-    <title>Agencia Digital</title>
+    <title>Agencia Digital — Terminal de Gestión</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
-  <body class="h-full w-full m-0 p-0 overflow-hidden bg-surface text-text font-sans antialiased text-sm selection:bg-accent/20 selection:text-accent">
+  <body class="h-full w-full m-0 p-0 overflow-hidden bg-surface text-text font-sans antialiased text-sm">
     <App client:only="react" />
   </body>
 </html>

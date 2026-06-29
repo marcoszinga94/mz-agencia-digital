@@ -17,6 +17,11 @@ export default function PrestigePanel({ data, onRebrand, onBuyPrestige, onAscend
         <span className="text-accent-orange">◆</span> Prestige
         <span className="ml-auto text-xs font-mono font-normal text-accent-purple">{data.prestigePoints} PP</span>
       </div>
+      {data.prestigeCount > 0 && (
+        <div className="text-[11px] text-accent-orange/60 font-mono tracking-wider text-center uppercase">
+          Re-brand #{data.prestigeCount}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-1.5">
         <div className="px-2 py-1.5 rounded-md bg-surface border border-surface-border text-center">
@@ -34,20 +39,20 @@ export default function PrestigePanel({ data, onRebrand, onBuyPrestige, onAscend
       </div>
 
       <button onClick={onRebrand} disabled={!canRebrand}
-        className="w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-red/40 text-accent-red
+        className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-red/40 text-accent-red
           bg-accent-red/5 hover:bg-accent-red/15 active:bg-accent-red/25 disabled:opacity-25 disabled:cursor-not-allowed
-          transition-all cursor-pointer"
+          transition-all duration-200 cursor-pointer"
       >🔥 Re-Brand & Earn PP</button>
 
       <div className="flex flex-col gap-1.5 pt-1">
         <button onClick={() => setShowTree(true)}
-          className="w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent/40 text-accent
-            bg-accent/5 hover:bg-accent/15 active:bg-accent/25 transition-all cursor-pointer"
+          className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent/40 text-accent
+            bg-accent/5 hover:bg-accent/15 active:bg-accent/25 transition-all duration-200 cursor-pointer"
         >🌀 Open Skill Tree</button>
         {ascendReady && (
           <button onClick={onAscend}
-            className="w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-blue/40 text-accent-blue
-              bg-accent-blue/5 hover:bg-accent-blue/15 active:bg-accent-blue/25 transition-all cursor-pointer"
+            className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-blue/40 text-accent-blue
+              bg-accent-blue/5 hover:bg-accent-blue/15 active:bg-accent-blue/25 transition-all duration-200 cursor-pointer animate-pulse"
           >🌀 Ascender</button>
         )}
       </div>

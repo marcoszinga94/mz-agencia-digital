@@ -22,11 +22,11 @@ export default function ShopTabs({ data, onBuy, onRebrand, onBuyPrestige, onAsce
   const [tab, setTab] = useState<Tab>('upgrades');
 
   return (
-    <div className="rounded-lg border border-surface-border bg-surface-card flex flex-col min-h-0 h-full overflow-hidden">
+    <div className="game-panel rounded-lg border border-surface-border bg-surface-card flex flex-col min-h-0 h-full overflow-hidden">
       <div className="flex border-b border-surface-border shrink-0">
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
-            className={`flex-1 text-[13px] font-semibold py-2 transition-colors cursor-pointer ${
+            className={`game-btn flex-1 text-[13px] font-semibold py-2 transition-all duration-200 cursor-pointer ${
               tab === t.key
                 ? 'text-accent border-b-2 border-accent bg-accent/5'
                 : 'text-text-muted hover:text-text hover:bg-surface-hover'

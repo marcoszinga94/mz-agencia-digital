@@ -60,9 +60,9 @@ function connColor(key: string, owned: boolean): string {
 
 export default function SkillTreeModal({ data, onBuyPrestige, onClose }: Props) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-surface-card border border-surface-border rounded-xl shadow-2xl w-full max-w-[1200px] max-h-[90vh] flex flex-col" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-5 py-3 border-b border-surface-border shrink-0">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="game-panel bg-surface-card border border-surface-border rounded-xl shadow-2xl w-full max-w-[1200px] max-h-[90vh] flex flex-col animate-fade-in" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between px-5 py-3 border-b border-surface-border shrink-0 bg-surface/50">
           <div className="flex items-center gap-3">
             <span className="text-lg font-bold text-text">🌀 Skill Tree</span>
             <span className="text-sm text-text-dim">{data.prestigeUpgrades.length}/{PRESTIGIO_UPGRADES.length} unlocked</span>
@@ -70,7 +70,7 @@ export default function SkillTreeModal({ data, onBuyPrestige, onClose }: Props) 
           <div className="flex items-center gap-3">
             <span className="text-sm font-semibold text-accent-purple">{data.prestigePoints} PP</span>
             <button onClick={onClose}
-              className="text-xl text-text-dim hover:text-text transition-colors cursor-pointer leading-none">&times;</button>
+              className="text-xl text-text-dim hover:text-text hover:scale-110 transition-all duration-200 cursor-pointer leading-none">&times;</button>
           </div>
         </div>
 

@@ -14,8 +14,8 @@ export default function AscendModal({ data, onConfirm, onClose }: Props) {
   const branches = [...new Set(newSkills.map(s => s.branch))];
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
         <h2 className="text-base font-bold text-text mb-1">🌀 Ascensión</h2>
         <p className="text-xs text-text-muted mb-4">Has dominado todas las habilidades. Es hora de ascender.</p>
 
@@ -47,10 +47,10 @@ export default function AscendModal({ data, onConfirm, onClose }: Props) {
         <p className="text-xs text-accent-orange mb-4 font-medium">Se reiniciará TODO: recursos, upgrades, equipo, proyectos, PP y habilidades de prestigio base. Solo se conservan las habilidades de Ascensión.</p>
 
         <div className="flex gap-2">
-          <button onClick={onClose} className="flex-1 px-4 py-1.5 rounded-lg bg-surface-hover text-text text-xs font-medium hover:brightness-110 transition-all">
+          <button onClick={onClose} className="game-btn flex-1 px-4 py-1.5 rounded-lg bg-surface-hover text-text text-xs font-medium hover:brightness-110 transition-all">
             Cancelar
           </button>
-          <button onClick={onConfirm} className="flex-1 px-4 py-1.5 rounded-lg bg-accent-blue text-white text-xs font-medium hover:bg-accent-blue/80 transition-all">
+          <button onClick={onConfirm} className="game-btn flex-1 px-4 py-1.5 rounded-lg bg-accent-blue text-white text-xs font-medium hover:bg-accent-blue/80 transition-all">
             ¡Ascender!
           </button>
         </div>

@@ -23,11 +23,11 @@ function UpgradeRow({ name, desc, cost, effect_type, effect_value, owned, canAff
   name: string; desc: string; cost: number; effect_type: string; effect_value: number; owned: boolean; canAfford: boolean; totalStr: string; onBuy: () => void
 }) {
   return (
-    <div className={`group flex items-center gap-2 px-2.5 py-2 rounded-md transition-all ${
-      owned ? 'bg-accent-green/5' : 'hover:bg-surface-hover'
+    <div className={`group flex items-center gap-2 px-2.5 py-2 rounded-md transition-all duration-200 ${
+      owned ? 'bg-accent-green/5 border border-accent-green/10' : 'hover:bg-surface-hover'
     }`}>
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-medium leading-tight ${owned ? 'text-accent-green' : 'text-text'}`}>
+        <div className={`text-sm font-medium leading-tight ${owned ? 'text-accent-green' : 'text-text group-hover:text-white transition-colors'}`}>
           {name}
           <span className={`ml-1.5 text-[13px] font-mono ${owned ? 'text-accent-green/60' : 'text-accent'}`}>+{effect_value}</span>
         </div>
@@ -38,7 +38,7 @@ function UpgradeRow({ name, desc, cost, effect_type, effect_value, owned, canAff
         <div className={`text-xs font-mono ${owned ? 'text-accent-green' : 'text-text-dim'}`}>{fmtDinero(cost)}</div>
       </div>
       <button onClick={onBuy} disabled={owned || !canAfford}
-        className={`text-xs font-medium px-2 py-0.5 rounded border shrink-0 transition-all cursor-pointer ${
+        className={`game-btn text-xs font-medium px-2 py-0.5 rounded border shrink-0 transition-all duration-200 cursor-pointer ${
           owned
             ? 'border-accent-green/30 text-accent-green bg-accent-green/10'
             : 'border-accent/30 text-accent bg-accent/10 hover:bg-accent/20 group-hover:border-accent/50'
@@ -81,13 +81,13 @@ export default function UpgradesPanel({ data, onBuy }: Props) {
                 <div className="py-1">
                   {clickUpgs.length > 0 && (
                     <div className="px-3 py-1 mt-1">
-                      <span className="text-[13px] font-semibold uppercase tracking-wider text-text-dim/60">Click</span>
+                      <span className="text-[13px] font-semibold uppercase tracking-wider text-accent/60">Click</span>
                     </div>
                   )}
                   <UpgradeList upgs={clickUpgs} data={data} onBuy={onBuy} />
                   {psUpgs.length > 0 && (
                     <div className="px-3 py-1 mt-1 border-t border-surface-border/40">
-                      <span className="text-[13px] font-semibold uppercase tracking-wider text-text-dim/60">Por segundo</span>
+                      <span className="text-[13px] font-semibold uppercase tracking-wider text-accent-green/60">Por segundo</span>
                     </div>
                   )}
                   <UpgradeList upgs={psUpgs} data={data} onBuy={onBuy} />
