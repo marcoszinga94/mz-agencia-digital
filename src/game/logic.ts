@@ -4,12 +4,15 @@ import { UPGRADES, PROYECTOS, PRESTIGIO_UPGRADES } from './data';
 // ── Formateo ──────────────────────────────────────────
 
 export function fmtNum(n: number): string {
-  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(2) + 'B';
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
-  if (n >= 10_000) return (n / 1_000).toFixed(2) + 'K';
-  if (n >= 1) return Math.floor(n).toLocaleString();
-  if (n > 0) return n.toFixed(1);
-  return '0';
+  const abs = Math.abs(n);
+  let formatted: string;
+  if (abs >= 1_000_000_000) formatted = (abs / 1_000_000_000).toFixed(2) + 'B';
+  else if (abs >= 1_000_000) formatted = (abs / 1_000_000).toFixed(2) + 'M';
+  else if (abs >= 10_000) formatted = (abs / 1_000).toFixed(2) + 'K';
+  else if (abs >= 1) formatted = Math.floor(abs).toLocaleString();
+  else if (abs > 0) formatted = abs.toFixed(1);
+  else formatted = '0';
+  return n < 0 ? '-' + formatted : formatted;
 }
 
 export function fmtDinero(n: number): string {

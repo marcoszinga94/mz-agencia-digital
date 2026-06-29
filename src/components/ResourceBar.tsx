@@ -8,8 +8,8 @@ function Stat({ label, value, perSec, color }: { label: string; value: string; p
   return (
     <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-surface-card/50">
       <span className="text-text-muted text-xs font-medium uppercase tracking-wider">{label}</span>
-      <span className={`font-semibold text-xs ${color || 'text-text'}`}>{value}</span>
-      {perSec && <span className="text-text-dim text-xs">({perSec}/s)</span>}
+      <span className={`font-semibold text-xs tabular-nums min-w-[4ch] text-right ${color || 'text-text'}`}>{value}</span>
+      {perSec && <span className="text-text-dim text-xs tabular-nums w-[9ch]">({perSec}/s)</span>}
     </div>
   );
 }
@@ -19,7 +19,7 @@ function BalanceItem({ label, value, net }: { label: string; value: string; net:
   return (
     <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface-card/50">
       <span className="text-text-muted text-xs font-medium uppercase tracking-wider">{label}</span>
-      <span className={`font-bold text-sm ${color}`}>{value}</span>
+      <span className={`font-bold text-sm tabular-nums min-w-[8ch] text-right ${color}`}>{value}</span>
     </div>
   );
 }
@@ -46,8 +46,8 @@ export default function ResourceBar({ data, className = '', onReset }: Props) {
         <Stat label="⭐ Rep" value={fmtNum(data.reputacion)} color="text-accent-orange" />
         <div className="flex items-center gap-1.5 bg-accent-green/10 px-3 py-1 rounded-md border border-accent-green/20">
           <span className="text-xs font-medium uppercase tracking-wider text-accent-green">Balance</span>
-          <span className="font-bold text-sm text-accent-green">{fmtDinero(data.dinero)}</span>
-          {data.activeProject && <span className="text-text-dim text-xs">({fmtDinero(getDineroPs(data))}/s)</span>}
+          <span className="font-bold text-sm text-accent-green tabular-nums">{fmtDinero(data.dinero)}</span>
+          {data.activeProject && <span className="text-text-dim text-xs tabular-nums w-[12ch]">({fmtDinero(getDineroPs(data))}/s)</span>}
         </div>
         <MenuButton data={data} onReset={onReset} />
       </div>
