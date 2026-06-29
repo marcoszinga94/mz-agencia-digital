@@ -131,6 +131,30 @@ export function getProjectCostDiscount(data: GameData): number {
   return d;
 }
 
+export function getLocConsumptionPs(data: GameData): number {
+  if (!data.activeProject) return 0;
+  const proj = PROYECTOS.find(x => x.id === data.activeProject);
+  if (!proj) return 0;
+  const speed = getProjectSpeed(data);
+  return (proj.loc_required * speed) / proj.work_required;
+}
+
+export function getPdConsumptionPs(data: GameData): number {
+  if (!data.activeProject) return 0;
+  const proj = PROYECTOS.find(x => x.id === data.activeProject);
+  if (!proj) return 0;
+  const speed = getProjectSpeed(data);
+  return (proj.pd_required * speed) / proj.work_required;
+}
+
+export function getTraficoConsumptionPs(data: GameData): number {
+  if (!data.activeProject) return 0;
+  const proj = PROYECTOS.find(x => x.id === data.activeProject);
+  if (!proj) return 0;
+  const speed = getProjectSpeed(data);
+  return (proj.trafico_required * speed) / proj.work_required;
+}
+
 export function getDineroPs(data: GameData): number {
   if (!data.activeProject) return 0;
   const proj = PROYECTOS.find(x => x.id === data.activeProject);
