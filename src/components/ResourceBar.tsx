@@ -29,7 +29,7 @@ export default function ResourceBar({ data, className = '', onReset }: Props) {
   const pdNet = getPdPs(data) - getPdConsumptionPs(data);
   const traficoNet = getTraficoPs(data) - getTraficoConsumptionPs(data);
   return (
-    <div className={`game-panel flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-card border border-surface-border ${className}`}>
+    <div className={`game-panel overflow-visible flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-card border border-surface-border ${className}`}>
       <Stat label="LoC" value={fmtNum(data.loc)} perSec={fmtNum(getLocPs(data))} />
       <Stat label="PD" value={fmtNum(data.pd)} perSec={fmtNum(getPdPs(data))} />
       <Stat label="Tráfico" value={fmtNum(data.trafico)} perSec={fmtNum(getTraficoPs(data))} />

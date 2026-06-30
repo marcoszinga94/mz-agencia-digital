@@ -76,7 +76,6 @@ a:focus-visible {
 
 .game-panel {
   position: relative;
-  overflow: hidden;
 }
 
 .game-panel::before {
