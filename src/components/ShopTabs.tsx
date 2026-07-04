@@ -25,7 +25,6 @@ export default function ShopTabs({ data, onBuy, onRebrand, onBuyPrestige, onAsce
   return (
     <div className="game-panel card flex flex-col min-h-0 h-full overflow-hidden">
       <div className="flex items-center border-b border-surface-border shrink-0 p-1 gap-1">
-        <div className="shop-drag-handle cursor-grab px-1 text-text-dim hover:text-text select-none text-sm leading-none">⠿</div>
         {TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
             className={`game-btn flex-1 text-[13px] font-semibold py-2 rounded-lg transition-all duration-200 cursor-pointer ${

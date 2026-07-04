@@ -10,7 +10,7 @@ export default function ProjectPanel({ data, onStartProject, onCancelProject, au
   return (
     <div className="game-panel card flex flex-col p-3 min-h-0 h-full">
       <div className="flex items-center justify-between mb-3">
-        <div className="section-title project-drag-handle cursor-grab">
+        <div className="section-title">
           <span className="text-accent">◆</span> Proyectos
         </div>
         <button onClick={onToggleAutoProject}

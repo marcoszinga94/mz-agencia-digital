@@ -49,7 +49,7 @@ export default function TeamPanel({ data, onHire }: Props) {
   return (
     <div className="game-panel card p-3 shrink-0">
       <div className="flex items-center justify-between mb-3">
-        <div className="section-title team-drag-handle cursor-grab">
+        <div className="section-title">
           <span className="text-accent-purple">◆</span> Equipo
         </div>
         <div className="badge badge-purple">
