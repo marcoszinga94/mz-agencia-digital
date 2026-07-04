@@ -5,9 +5,9 @@ import { fmtDinero, fmtNum, getLocClick, getPdClick, getTraficoClick, getLocPs, 
 interface Props { data: GameData; onBuy: (id: string) => void }
 
 const AREAS = [
-  { key: 'dev', icon: '💻', label: 'Desarrollo' },
-  { key: 'dis', icon: '🎨', label: 'Diseño' },
-  { key: 'mkt', icon: '📊', label: 'Marketing' },
+  { key: 'dev', icon: '💻', label: 'Desarrollo', color: 'accent' },
+  { key: 'dis', icon: '🎨', label: 'Diseño', color: 'accent-pink' },
+  { key: 'mkt', icon: '📊', label: 'Marketing', color: 'accent-cyan' },
 ] as const;
 
 const CURRENT_TOTALS: Record<string, (d: GameData) => string> = {
@@ -19,49 +19,52 @@ const CURRENT_TOTALS: Record<string, (d: GameData) => string> = {
   trafico_ps: d => `${fmtNum(getTraficoPs(d))}/s`,
 };
 
-function UpgradeRow({ name, desc, cost, effect_type, effect_value, owned, canAfford, totalStr, onBuy }: {
-  name: string; desc: string; cost: number; effect_type: string; effect_value: number; owned: boolean; canAfford: boolean; totalStr: string; onBuy: () => void
+function UpgradeRow({ name, desc, cost, effect_value, owned, canAfford, totalStr, onBuy }: {
+  name: string; desc: string; cost: number; effect_value: number; owned: boolean; canAfford: boolean; totalStr: string; onBuy: () => void;
 }) {
   return (
-    <div className={`group flex items-center gap-2 px-2.5 py-2 rounded-md transition-all duration-200 ${
-      owned ? 'bg-accent-green/5 border border-accent-green/10' : 'hover:bg-surface-hover'
+    <div className={`group flex items-center gap-3 px-2.5 py-2 rounded-lg border transition-all duration-200 ${
+      owned
+        ? 'bg-accent-green/5 border-accent-green/20'
+        : canAfford
+          ? 'bg-surface-card/30 border-surface-border/50 hover:bg-surface-hover/60 hover:border-accent/30'
+          : 'bg-surface-card/20 border-surface-border/30 opacity-70'
     }`}>
       <div className="flex-1 min-w-0">
-        <div className={`text-sm font-medium leading-tight ${owned ? 'text-accent-green' : 'text-text group-hover:text-white transition-colors'}`}>
+        <div className={`text-sm font-semibold leading-tight ${owned ? 'text-accent-green' : 'text-text'}`}>
           {name}
-          <span className={`ml-1.5 text-[13px] font-mono ${owned ? 'text-accent-green/60' : 'text-accent'}`}>+{effect_value}</span>
         </div>
-        <div className="text-xs text-text-dim leading-tight mt-0.5">{desc}</div>
+        <div className="text-[11px] text-text-dim leading-tight mt-0.5">{desc}</div>
       </div>
       <div className="text-right shrink-0">
-        <div className={`text-xs font-mono ${owned ? 'text-accent-green/60' : 'text-text-dim/60'}`}>total: {totalStr}</div>
-        <div className={`text-xs font-mono ${owned ? 'text-accent-green' : 'text-text-dim'}`}>{fmtDinero(cost)}</div>
+        <div className={`text-[10px] font-mono ${owned ? 'text-accent-green/60' : 'text-text-dim/60'}`}>total {totalStr}</div>
+        <div className={`text-xs font-mono font-semibold ${owned ? 'text-accent-green' : canAfford ? 'text-accent-green' : 'text-accent-red'}`}>{fmtDinero(cost)}</div>
       </div>
       <button onClick={onBuy} disabled={owned || !canAfford}
-        className={`game-btn text-xs font-medium px-2 py-0.5 rounded border shrink-0 transition-all duration-200 cursor-pointer ${
+        className={`btn text-xs px-2.5 py-1 rounded-lg shrink-0 disabled:opacity-25 ${
           owned
-            ? 'border-accent-green/30 text-accent-green bg-accent-green/10'
-            : 'border-accent/30 text-accent bg-accent/10 hover:bg-accent/20 group-hover:border-accent/50'
-        } disabled:opacity-25 disabled:cursor-not-allowed`}
-      >{owned ? '✓' : 'Buy'}</button>
+            ? 'bg-accent-green/10 text-accent-green border border-accent-green/30'
+            : 'btn-primary'
+        }`}
+      >{owned ? '✓' : 'Comprar'}</button>
     </div>
   );
 }
 
 function UpgradeList({ upgs, data, onBuy }: { upgs: Upgrade[]; data: GameData; onBuy: (id: string) => void }) {
   return (
-    <>
+    <div className="flex flex-col gap-1">
       {upgs.map(upg => (
         <UpgradeRow key={upg.id}
           name={upg.name} desc={upg.desc}
-          cost={upg.cost} effect_type={upg.effect_type} effect_value={upg.effect_value}
+          cost={upg.cost} effect_value={upg.effect_value}
           owned={data.upgrades.includes(upg.id)}
           canAfford={data.dinero >= upg.cost}
           totalStr={CURRENT_TOTALS[upg.effect_type]?.(data) ?? ''}
           onBuy={() => onBuy(upg.id)}
         />
       ))}
-    </>
+    </div>
   );
 }
 
@@ -69,25 +72,28 @@ export default function UpgradesPanel({ data, onBuy }: Props) {
   return (
     <div className="flex flex-col min-h-0 h-full">
       <div className="flex-1 overflow-y-auto min-h-0">
-        <div className="grid grid-cols-3 divide-x divide-surface-border h-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-surface-border h-full">
           {AREAS.map(area => {
             const clickUpgs = UPGRADES.filter(u => u.area === area.key && u.effect_type.endsWith('_click'));
             const psUpgs = UPGRADES.filter(u => u.area === area.key && u.effect_type.endsWith('_ps'));
             return (
               <div key={area.key} className="flex flex-col min-h-0">
-                <div className="px-3 py-1.5 border-b border-surface-border bg-surface/50 shrink-0">
-                  <span className="text-[13px] font-semibold text-text-muted">{area.icon} {area.label}</span>
+                <div className="px-3 py-2 border-b border-surface-border bg-surface/50 shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm">{area.icon}</span>
+                    <span className={`text-[13px] font-bold text-${area.color}`}>{area.label}</span>
+                  </div>
                 </div>
-                <div className="py-1">
+                <div className="py-2 px-1.5">
                   {clickUpgs.length > 0 && (
-                    <div className="px-3 py-1 mt-1">
-                      <span className="text-[13px] font-semibold uppercase tracking-wider text-accent/60">Click</span>
+                    <div className="px-2 py-1 mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-text-dim">Por click</span>
                     </div>
                   )}
                   <UpgradeList upgs={clickUpgs} data={data} onBuy={onBuy} />
                   {psUpgs.length > 0 && (
-                    <div className="px-3 py-1 mt-1 border-t border-surface-border/40">
-                      <span className="text-[13px] font-semibold uppercase tracking-wider text-accent-green/60">Por segundo</span>
+                    <div className="px-2 py-1 mt-2 border-t border-surface-border/40">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-text-dim">Por segundo</span>
                     </div>
                   )}
                   <UpgradeList upgs={psUpgs} data={data} onBuy={onBuy} />

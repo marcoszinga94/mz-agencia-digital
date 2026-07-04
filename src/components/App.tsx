@@ -9,6 +9,8 @@ import TeamPanel from './TeamPanel';
 import ShopTabs from './ShopTabs';
 import PrestigeModal from './PrestigeModal';
 import AscendModal from './AscendModal';
+import SkillTreeModal from './SkillTreeModal';
+// import DraggablePanel from './DraggablePanel';
 
 
 export default function App() {
@@ -49,6 +51,7 @@ export default function App() {
 
   const [showPrestigeModal, setShowPrestigeModal] = useState(false);
   const [showAscendModal, setShowAscendModal] = useState(false);
+  const [showSkillTree, setShowSkillTree] = useState(false);
 
   const act = useCallback((fn: (d: GameData) => GameData) => setData(fn), []);
 
@@ -72,16 +75,18 @@ export default function App() {
     act(ascend);
   }, [act]);
 
+  const gridRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="h-screen p-2 grid grid-rows-[auto_auto_1fr] gap-1.5 overflow-hidden">
-      <ResourceBar data={data} className="flex-1" onReset={() => setData(resetGame())} />
+    <div className="h-screen p-2 md:p-3 grid grid-rows-[auto_auto_1fr] gap-2 md:gap-3 overflow-hidden bg-surface">
+      <ResourceBar data={data} onReset={() => setData(resetGame())} />
       <ClickButtons data={data} onDev={() => act(clickDev)} onDis={() => act(clickDis)} onMkt={() => act(clickMkt)} />
-      <div className="grid grid-cols-[1fr_50rem] gap-1.5 min-h-0">
+      <div ref={gridRef} className="grid grid-cols-1 lg:grid-cols-[1fr_28rem] xl:grid-cols-[1fr_46rem] gap-2 md:gap-3 min-h-0 overflow-y-auto lg:overflow-visible">
         <ProjectPanel data={data} onStartProject={(id) => act(d => startProject(d, id))} onCancelProject={() => act(cancelProject)}
           autoProject={autoProject} onToggleAutoProject={() => setAutoProject(p => !p)} />
-        <div className="grid grid-rows-[auto_1fr] gap-1.5 min-h-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-rows-[auto_1fr] lg:grid-cols-1 gap-2 md:gap-3 min-h-0">
           <TeamPanel data={data} onHire={(r) => act(d => hireRole(d, r))} />
-          <ShopTabs data={data} onBuy={(id) => act(d => buyUpgrade(d, id))} onRebrand={handlePrestige} onBuyPrestige={handlePrestigeBuy} onAscend={handleAscend} />
+          <ShopTabs data={data} onBuy={(id) => act(d => buyUpgrade(d, id))} onRebrand={handlePrestige} onBuyPrestige={handlePrestigeBuy} onAscend={handleAscend} onOpenSkillTree={() => setShowSkillTree(true)} />
         </div>
       </div>
       {showPrestigeModal && (
@@ -98,6 +103,13 @@ export default function App() {
           data={data}
           onConfirm={confirmAscend}
           onClose={() => setShowAscendModal(false)}
+        />
+      )}
+      {showSkillTree && (
+        <SkillTreeModal
+          data={data}
+          onBuyPrestige={handlePrestigeBuy}
+          onClose={() => setShowSkillTree(false)}
         />
       )}
     </div>

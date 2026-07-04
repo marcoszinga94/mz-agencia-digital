@@ -1,63 +1,82 @@
-import { useState } from 'react';
 import type { GameData } from '../game/types';
 import { fmtNum, getPrestigeCost, canAscend } from '../game/logic';
-import SkillTreeModal from './SkillTreeModal';
 
-interface Props { data: GameData; onRebrand: () => void; onBuyPrestige: (id: string) => void; onAscend: () => void }
+interface Props { data: GameData; onRebrand: () => void; onBuyPrestige: (id: string) => void; onAscend: () => void; onOpenSkillTree: () => void }
 
-export default function PrestigePanel({ data, onRebrand, onBuyPrestige, onAscend }: Props) {
-  const [showTree, setShowTree] = useState(false);
+export default function PrestigePanel({ data, onRebrand, onBuyPrestige, onAscend, onOpenSkillTree }: Props) {
   const pcost = getPrestigeCost(data);
   const canRebrand = data.reputacion >= pcost;
   const ascendReady = canAscend(data);
+  const gain = Math.max(1, Math.floor(data.reputacion / 100));
 
   return (
-    <div className="p-3 flex flex-col gap-2 overflow-y-auto h-full">
-      <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-text-muted">
+    <div className="p-3 flex flex-col gap-3 overflow-y-auto h-full">
+      <div className="section-title">
         <span className="text-accent-orange">◆</span> Prestige
-        <span className="ml-auto text-xs font-mono font-normal text-accent-purple">{data.prestigePoints} PP</span>
       </div>
+
       {data.prestigeCount > 0 && (
-        <div className="text-[11px] text-accent-orange/60 font-mono tracking-wider text-center uppercase">
-          Re-brand #{data.prestigeCount}
+        <div className="text-center">
+          <span className="badge badge-orange">Re-brand #{data.prestigeCount}</span>
         </div>
       )}
 
-      <div className="grid grid-cols-3 gap-1.5">
-        <div className="px-2 py-1.5 rounded-md bg-surface border border-surface-border text-center">
-          <div className="text-xs text-text-dim">⭐ Reputation</div>
+      <div className="grid grid-cols-3 gap-2">
+        <div className="px-2 py-2 rounded-xl bg-surface-card/60 border border-surface-border/50 text-center">
+          <div className="text-[10px] text-text-dim uppercase tracking-wider">⭐ Rep</div>
           <div className="text-sm font-bold text-accent-orange">{fmtNum(data.reputacion)}</div>
         </div>
-        <div className="px-2 py-1.5 rounded-md bg-surface border border-surface-border text-center">
-          <div className="text-xs text-text-dim">🔥 Re-brands</div>
-          <div className="text-sm font-bold text-text">{data.prestigeCount}</div>
+        <div className="px-2 py-2 rounded-xl bg-surface-card/60 border border-surface-border/50 text-center">
+          <div className="text-[10px] text-text-dim uppercase tracking-wider">🔮 PP</div>
+          <div className="text-sm font-bold text-accent-purple">{data.prestigePoints}</div>
         </div>
-        <div className="px-2 py-1.5 rounded-md bg-surface border border-surface-border text-center">
-          <div className="text-xs text-text-dim">🎯 Next cost</div>
-          <div className="text-sm font-bold text-accent-orange">{pcost} ⭐</div>
+        <div className={`px-2 py-2 rounded-xl border text-center transition-all ${
+          canRebrand
+            ? 'bg-accent-green/10 border-accent-green/30'
+            : 'bg-surface-card/60 border-surface-border/50'
+        }`}>
+          <div className="text-[10px] text-text-dim uppercase tracking-wider">🎯 Costo</div>
+          <div className={`text-sm font-bold ${canRebrand ? 'text-accent-green' : 'text-accent-orange'}`}>{pcost} ⭐</div>
         </div>
       </div>
 
-      <button onClick={onRebrand} disabled={!canRebrand}
-        className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-red/40 text-accent-red
-          bg-accent-red/5 hover:bg-accent-red/15 active:bg-accent-red/25 disabled:opacity-25 disabled:cursor-not-allowed
-          transition-all duration-200 cursor-pointer"
-      >🔥 Re-Brand & Earn PP</button>
+      <div className="flex flex-col gap-2">
+        <button onClick={onRebrand} disabled={!canRebrand}
+          className={`btn w-full text-sm font-semibold px-4 py-3 rounded-xl transition-all ${
+            canRebrand
+              ? 'btn-danger animate-pulse'
+              : 'btn-secondary opacity-60 cursor-not-allowed'
+          }`}
+        >
+          <span>🔥</span>
+          <span>Re-Brand +{fmtNum(gain)} PP</span>
+        </button>
 
-      <div className="flex flex-col gap-1.5 pt-1">
-        <button onClick={() => setShowTree(true)}
-          className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent/40 text-accent
-            bg-accent/5 hover:bg-accent/15 active:bg-accent/25 transition-all duration-200 cursor-pointer"
-        >🌀 Open Skill Tree</button>
+        <button type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenSkillTree();
+          }}
+          className="w-full text-sm font-semibold px-4 py-3 rounded-xl border border-accent/40 bg-accent/10 text-accent hover:bg-accent/20 transition-all"
+        >
+          <span>🌀</span>
+          <span>Árbol de Skills</span>
+        </button>
+
         {ascendReady && (
           <button onClick={onAscend}
-            className="game-btn w-full text-sm font-semibold px-3 py-2.5 rounded-lg border border-accent-blue/40 text-accent-blue
-              bg-accent-blue/5 hover:bg-accent-blue/15 active:bg-accent-blue/25 transition-all duration-200 cursor-pointer animate-pulse"
-          >🌀 Ascender</button>
+            className="btn w-full text-sm font-semibold px-4 py-3 rounded-xl animate-pulse"
+            style={{
+              background: 'linear-gradient(135deg, rgba(121, 192, 255, 0.15), rgba(188, 140, 255, 0.1))',
+              border: '1px solid rgba(121, 192, 255, 0.4)',
+              color: '#79c0ff'
+            }}
+          >
+            <span>🌀</span>
+            <span>Ascender</span>
+          </button>
         )}
       </div>
-
-      {showTree && <SkillTreeModal data={data} onBuyPrestige={onBuyPrestige} onClose={() => setShowTree(false)} />}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import type { GameData } from '../game/types';
 import { PROYECTOS } from '../game/data';
-import { fmtNum, fmtDinero, getProjectSpeed, getProjectDineroMult, getProjectCostDiscount } from '../game/logic';
+import { fmtNum, fmtDinero, getProjectSpeed, getProjectDineroMult, getProjectCostDiscount, getProjectReputation } from '../game/logic';
 
 interface Props { data: GameData; onStartProject: (id: string) => void; onCancelProject: () => void; autoProject: boolean; onToggleAutoProject: () => void }
 
@@ -8,25 +8,29 @@ export default function ProjectPanel({ data, onStartProject, onCancelProject, au
   const speed = getProjectSpeed(data);
 
   return (
-    <div className="game-panel flex flex-col rounded-lg border border-surface-border bg-surface-card p-3 min-h-0 h-full">
-      <div className="flex items-center justify-between mb-2">
-        <div className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-          <span className="text-accent mr-1">◆</span> Projects
+    <div className="game-panel card flex flex-col p-3 min-h-0 h-full">
+      <div className="flex items-center justify-between mb-3">
+        <div className="section-title project-drag-handle cursor-grab">
+          <span className="text-accent">◆</span> Proyectos
         </div>
         <button onClick={onToggleAutoProject}
-          className={`game-btn text-xs font-medium px-2 py-0.5 rounded border transition-all cursor-pointer ${
+          className={`btn text-xs px-2.5 py-1 rounded-lg border transition-all ${
             autoProject
               ? 'border-accent bg-accent/15 text-accent hover:bg-accent/25'
               : 'border-surface-border text-text-dim hover:text-text hover:bg-surface-hover'
           }`}
-        >{autoProject ? '🔁 Auto: ON' : '🔁 Auto'}</button>
+        >
+          <span>{autoProject ? '🔁' : '🔁'}</span>
+          <span>{autoProject ? 'Auto: ON' : 'Auto'}</span>
+        </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-1.5 pr-1">
+      <div className="flex-1 overflow-y-auto min-h-0 flex flex-col gap-2 pr-1">
         {PROYECTOS.filter(proj => !proj.requiredAscended || data.ascended).map(proj => {
           const isActive = data.activeProject === proj.id;
           const discount = getProjectCostDiscount(data);
           const mult = getProjectDineroMult(data);
+          const rep = getProjectReputation(proj, data);
           const costo = Math.floor(proj.costo_dinero * discount);
           const reward = Math.floor(proj.reward_dinero * mult);
           const canStart = !isActive && !data.activeProject
@@ -38,45 +42,73 @@ export default function ProjectPanel({ data, onStartProject, onCancelProject, au
           const hasLoc = data.loc >= proj.loc_required;
           const hasPd = data.pd >= proj.pd_required;
           const hasTrafico = data.trafico >= proj.trafico_required;
-          const border = isActive ? 'border-accent' : 'border-surface-border';
+          const progressPct = Math.min(100, (data.projectProgress / proj.work_required) * 100);
 
           return (
-              <div key={proj.id} className={`flex flex-col gap-1 px-3 py-2 rounded-lg border ${border} bg-surface-card/50 transition-all duration-200 hover:bg-surface-hover/50`}>
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-sm text-text flex-1">{proj.name}</span>
-                  {isActive && <span className="text-xs font-medium text-accent bg-accent/10 px-2 py-0.5 rounded animate-pulse">ACTIVE</span>}
+            <div key={proj.id}
+              className={`relative grid grid-rows-[auto_auto_1fr_auto_auto] gap-1 px-3 py-2 rounded-xl border transition-all duration-200 min-h-[7.5rem] ${
+                isActive
+                  ? 'border-accent bg-accent/5 glow-blue'
+                  : 'border-surface-border bg-surface-card/40 hover:bg-surface-hover/60 hover:border-surface-border/80'
+              }`}
+            >
+              {/* Fila 1: nombre + estado/acción */}
+              <div className="flex items-center gap-2 min-h-[1.5rem]">
+                <span className="font-bold text-sm text-text flex-1 truncate">{proj.name}</span>
+                <div className="shrink-0 w-20 text-right">
+                  {isActive && <span className="badge badge-blue animate-pulse">ACTIVO</span>}
                   {!isActive && canStart && (
                     <button onClick={() => onStartProject(proj.id)}
-                      className="game-btn text-xs font-medium px-2.5 py-1 rounded-md bg-accent/10 text-accent border border-accent/30
-                        hover:bg-accent/20 active:bg-accent/30 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-                    >Start Project</button>
+                      className="btn btn-primary text-xs px-3 py-1 rounded-lg w-full"
+                    >Iniciar</button>
+                  )}
+                  {!isActive && !canStart && data.activeProject === null && (
+                    <span className="text-[10px] text-text-dim uppercase tracking-wider">Bloqueado</span>
                   )}
                 </div>
-                <span className="text-[13px] text-text-muted">{proj.desc}</span>
-                {isActive && (
-                  <div className="w-full h-2 rounded-full bg-surface-border overflow-hidden">
-                    <div className={`h-full rounded-full bg-accent transition-all duration-300 ${data.projectProgress > 0 ? 'progress-glow' : ''}`}
-                      style={{ width: `${Math.min(100, (data.projectProgress / proj.work_required) * 100)}%` }} />
-                  </div>
-                )}
-              <div className="flex items-center gap-3 text-xs text-text-dim flex-wrap">
+              </div>
+
+              {/* Fila 2: descripción */}
+              <p className="text-xs text-text-muted leading-snug truncate">{proj.desc}</p>
+
+              {/* Fila 3: barra de progreso (siempre ocupa espacio) */}
+              <div className="progress-bar h-2 w-full self-end transition-opacity duration-200" style={{ opacity: isActive ? 1 : 0 }}>
+                <div className="progress-bar-fill" style={{ width: `${isActive ? progressPct : 0}%` }} />
+              </div>
+
+              {/* Fila 4: costos y recompensas */}
+              <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-[11px] min-h-[1.25rem]">
                 <span className={hasDinero ? 'text-text-dim' : 'text-accent-red'}>💵 {fmtDinero(costo)}</span>
                 <span className={hasLoc ? 'text-text-dim' : 'text-accent-red'}>📄 {fmtNum(proj.loc_required)} LoC</span>
                 <span className={hasPd ? 'text-text-dim' : 'text-accent-red'}>🎨 {fmtNum(proj.pd_required)} PD</span>
                 <span className={hasTrafico ? 'text-text-dim' : 'text-accent-red'}>📢 {fmtNum(proj.trafico_required)} Tráfico</span>
-                <span className="text-accent-green">💰 {fmtDinero(reward)}</span>
-                <span className="text-accent-orange">⭐ {proj.reward_reputacion}</span>
+                <span className="text-accent-green font-medium">💰 {fmtDinero(reward)}</span>
+                <span className="text-accent-orange font-medium">⭐ {rep}</span>
+              </div>
+
+              {/* Fila 5: acciones / ETA / auto */}
+              <div className="flex items-center justify-between min-h-[1.25rem]">
+                <div className="flex items-center gap-2 text-[11px]">
+                  {isActive ? (
+                    <>
+                      <span className="text-accent">⏱ {(Math.max(0, proj.work_required - data.projectProgress) / speed).toFixed(1)}s</span>
+                      <span className="text-accent">🚀 {speed.toFixed(1)}x</span>
+                    </>
+                  ) : (
+                    <span className="text-text-dim/60">Esperando para iniciar</span>
+                  )}
+                </div>
                 {isActive && (
-                  <>
-                    <span className="text-accent">⏱ ETA {(Math.max(0, proj.work_required - data.projectProgress) / speed).toFixed(2)}s</span>
-                    <span className="text-accent">🚀 {speed.toFixed(1)}x</span>
-                    <button onClick={onCancelProject}
-                      className="game-btn ml-auto text-xs px-2 py-0.5 rounded border border-accent-red/30 text-accent-red hover:bg-accent-red/10 transition-colors cursor-pointer"
-                    >Cancel</button>
-                  </>
+                  <button onClick={onCancelProject}
+                    className="btn btn-danger text-[10px] px-2 py-0.5 rounded-md"
+                  >Cancelar</button>
                 )}
               </div>
-              {isActive && autoProject && <div className="text-[13px] text-accent text-center">↻ Se reiniciará automáticamente al completarse</div>}
+
+              {/* Fila 6: mensaje auto (siempre ocupa espacio) */}
+              <div className="text-[11px] text-accent text-center min-h-[1rem] transition-opacity duration-200" style={{ opacity: isActive && autoProject ? 1 : 0 }}>
+                ↻ Se reiniciará automáticamente al completarse
+              </div>
             </div>
           );
         })}

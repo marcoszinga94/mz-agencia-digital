@@ -1,4 +1,4 @@
-import type { GameData } from './types';
+import type { GameData, PrestigeUpg, Project } from './types';
 import { UPGRADES, PROYECTOS, PRESTIGIO_UPGRADES } from './data';
 
 // ── Formateo ──────────────────────────────────────────
@@ -55,6 +55,19 @@ export function getPdPs(data: GameData): number {
   return base * getMultiplier(data);
 }
 
+function getSeguidoresTraficoMult(data: GameData): number {
+  let m = 0.05;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'seg_trafico_mult') m *= pup.effect_value;
+  }
+  return m;
+}
+
+export function getSeguidoresTraficoPs(data: GameData): number {
+  return data.seguidores * getSeguidoresTraficoMult(data) * getMultiplier(data);
+}
+
 export function getTraficoPs(data: GameData): number {
   let base = 0;
   for (const uid of data.upgrades) {
@@ -62,13 +75,7 @@ export function getTraficoPs(data: GameData): number {
     if (u && u.effect_type === 'trafico_ps') base += u.effect_value;
   }
   base += data.team.marketers * 5;
-  let segMult = 0.01;
-  for (const pid of data.prestigeUpgrades) {
-    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
-    if (pup && pup.effect_type === 'seg_trafico_mult') segMult *= pup.effect_value;
-  }
-  base += data.seguidores * segMult;
-  return base * getMultiplier(data);
+  return (base + data.seguidores * getSeguidoresTraficoMult(data)) * getMultiplier(data);
 }
 
 function getClickPower(data: GameData): number {
@@ -80,7 +87,7 @@ function getClickPower(data: GameData): number {
   return bonus;
 }
 
-function getClickDineroMult(data: GameData): number {
+export function getClickDineroMult(data: GameData): number {
   let m = 1;
   for (const pid of data.prestigeUpgrades) {
     const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
@@ -89,13 +96,78 @@ function getClickDineroMult(data: GameData): number {
   return m;
 }
 
+function getSeguidoresDineroMult(data: GameData): number {
+  let m = 1;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'seg_dinero_mult') m *= pup.effect_value;
+  }
+  return m;
+}
+
+export function getSeguidoresDineroPs(data: GameData): number {
+  return data.seguidores * 0.02 * getSeguidoresDineroMult(data);
+}
+
+function getLocClickPower(data: GameData): number {
+  let bonus = 0;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'loc_click_power') bonus += pup.effect_value;
+  }
+  return bonus;
+}
+
+function getPdClickPower(data: GameData): number {
+  let bonus = 0;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'pd_click_power') bonus += pup.effect_value;
+  }
+  return bonus;
+}
+
+function getTraficoClickPower(data: GameData): number {
+  let bonus = 0;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'trafico_click_power') bonus += pup.effect_value;
+  }
+  return bonus;
+}
+
+export function getClickCritChance(data: GameData): number {
+  let chance = 0;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'click_crit_chance') chance += pup.effect_value;
+  }
+  return Math.min(1, chance);
+}
+
+function getClickCritMult(data: GameData): number {
+  let mult = 2;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'click_crit_mult') mult += pup.effect_value;
+  }
+  return mult;
+}
+
+function applyClickCrit(value: number, data: GameData): number {
+  const chance = getClickCritChance(data);
+  if (chance <= 0) return value;
+  if (Math.random() < chance) return value * getClickCritMult(data);
+  return value;
+}
+
 export function getLocClick(data: GameData): number {
   let base = 1;
   for (const uid of data.upgrades) {
     const u = UPGRADES.find(x => x.id === uid);
     if (u && u.effect_type === 'loc_click') base += u.effect_value;
   }
-  return (base + getClickPower(data)) * getMultiplier(data);
+  return (base + getClickPower(data) + getLocClickPower(data)) * getMultiplier(data);
 }
 
 export function getPdClick(data: GameData): number {
@@ -104,7 +176,7 @@ export function getPdClick(data: GameData): number {
     const u = UPGRADES.find(x => x.id === uid);
     if (u && u.effect_type === 'pd_click') base += u.effect_value;
   }
-  return (base + getClickPower(data)) * getMultiplier(data);
+  return (base + getClickPower(data) + getPdClickPower(data)) * getMultiplier(data);
 }
 
 export function getTraficoClick(data: GameData): number {
@@ -113,7 +185,7 @@ export function getTraficoClick(data: GameData): number {
     const u = UPGRADES.find(x => x.id === uid);
     if (u && u.effect_type === 'trafico_click') base += u.effect_value;
   }
-  return (base + getClickPower(data)) * getMultiplier(data);
+  return (base + getClickPower(data) + getTraficoClickPower(data)) * getMultiplier(data);
 }
 
 export function getProjectDineroMult(data: GameData): number {
@@ -123,6 +195,19 @@ export function getProjectDineroMult(data: GameData): number {
     if (pup && pup.effect_type === 'project_dinero_mult') m *= pup.effect_value;
   }
   return m;
+}
+
+export function getProjectReputationMult(data: GameData): number {
+  let m = 1;
+  for (const pid of data.prestigeUpgrades) {
+    const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
+    if (pup && pup.effect_type === 'bonus_reputation') m *= pup.effect_value;
+  }
+  return m;
+}
+
+export function getProjectReputation(proj: Project, data: GameData): number {
+  return Math.floor(proj.reward_reputacion * getProjectReputationMult(data));
 }
 
 export function getProjectCostDiscount(data: GameData): number {
@@ -158,13 +243,17 @@ export function getTraficoConsumptionPs(data: GameData): number {
   return (proj.trafico_required * speed) / proj.work_required;
 }
 
-export function getDineroPs(data: GameData): number {
+export function getProjectDineroPs(data: GameData): number {
   if (!data.activeProject) return 0;
   const proj = PROYECTOS.find(x => x.id === data.activeProject);
   if (!proj) return 0;
   const speed = getProjectSpeed(data);
   const mult = getProjectDineroMult(data);
   return (proj.reward_dinero * mult * speed) / proj.work_required;
+}
+
+export function getDineroPs(data: GameData): number {
+  return getSeguidoresDineroPs(data) + getProjectDineroPs(data);
 }
 
 export function getProjectSpeed(data: GameData): number {
@@ -183,7 +272,12 @@ export function getPrestigeCost(data: GameData): number {
     const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
     if (pup && pup.effect_type === 'prestige_cost_discount') d *= pup.effect_value;
   }
-  return Math.max(20, Math.floor(80 * Math.pow(2, data.prestigeCount) * d));
+  const base = data.lastPrestigeReputation > 0 ? data.lastPrestigeReputation * 1.2 : 100;
+  return Math.max(20, Math.floor(base * d));
+}
+
+export function getPrestigeUpgradeCost(pup: PrestigeUpg): number {
+  return Math.floor(pup.cost * Math.pow(1.8, pup.tier - 1));
 }
 
 export function getHireCost(role: 'developers' | 'designers' | 'marketers', data: GameData): number {
@@ -213,6 +307,7 @@ export function createInitialState(): GameData {
     prestigePoints: 0,
     prestigeCount: 0,
     prestigeUpgrades: [],
+    lastPrestigeReputation: 0,
     ascended: false,
   };
 }
@@ -232,6 +327,7 @@ export function gameTick(data: GameData): GameData {
   next.loc += getLocPs(data) * 0.1;
   next.pd += getPdPs(data) * 0.1;
   next.trafico += getTraficoPs(data) * 0.1;
+  next.dinero += getSeguidoresDineroPs(data) * 0.1;
   for (const pid of data.prestigeUpgrades) {
     const pup = PRESTIGIO_UPGRADES.find(x => x.id === pid);
     if (pup && pup.effect_type === 'seg_ps') next.seguidores += pup.effect_value * 0.1;
@@ -270,16 +366,19 @@ export function buyUpgrade(data: GameData, upgradeId: string): GameData {
 }
 
 export function clickDev(data: GameData): GameData {
-  return { ...data, loc: data.loc + getLocClick(data), dinero: data.dinero + 0.1 * getClickDineroMult(data) };
+  const loc = applyClickCrit(getLocClick(data), data);
+  return { ...data, loc: data.loc + loc, dinero: data.dinero + 0.1 * getClickDineroMult(data) };
 }
 
 export function clickDis(data: GameData): GameData {
-  return { ...data, pd: data.pd + getPdClick(data), dinero: data.dinero + 0.1 * getClickDineroMult(data) };
+  const pd = applyClickCrit(getPdClick(data), data);
+  return { ...data, pd: data.pd + pd, dinero: data.dinero + 0.1 * getClickDineroMult(data) };
 }
 
 export function clickMkt(data: GameData): GameData {
+  const trafico = applyClickCrit(getTraficoClick(data), data);
   const seg = Math.random() < 0.1 ? data.seguidores + 1 : data.seguidores;
-  return { ...data, trafico: data.trafico + getTraficoClick(data), dinero: data.dinero + 0.1 * getClickDineroMult(data), seguidores: seg };
+  return { ...data, trafico: data.trafico + trafico, dinero: data.dinero + 0.1 * getClickDineroMult(data), seguidores: seg };
 }
 
 export function hireRole(data: GameData, role: 'developers' | 'designers' | 'marketers'): GameData {
@@ -341,6 +440,7 @@ export function prestigeRebrand(data: GameData): GameData {
     prestigePoints: data.prestigePoints + puntos,
     prestigeCount: data.prestigeCount + 1,
     prestigeUpgrades: [...data.prestigeUpgrades],
+    lastPrestigeReputation: data.reputacion,
     ascended: data.ascended,
   };
 
@@ -409,14 +509,57 @@ export function buyPrestigeUpgrade(data: GameData, id: string): GameData {
   if (data.prestigeUpgrades.includes(id)) return data;
   const pup = PRESTIGIO_UPGRADES.find(x => x.id === id);
   if (!pup) return data;
-  if (data.prestigePoints < pup.cost) return data;
+  const cost = getPrestigeUpgradeCost(pup);
+  if (data.prestigePoints < cost) return data;
   if (pup.requiredAscended && !data.ascended) return data;
   if (pup.requires) {
     for (const req of pup.requires) {
       if (!data.prestigeUpgrades.includes(req)) return data;
     }
   }
-  return { ...data, prestigePoints: data.prestigePoints - pup.cost, prestigeUpgrades: [...data.prestigeUpgrades, id] };
+
+  const next: GameData = {
+    ...data,
+    prestigePoints: data.prestigePoints - cost,
+    prestigeUpgrades: [...data.prestigeUpgrades, id],
+    team: { ...data.team },
+    upgrades: [...data.upgrades],
+  };
+
+  const val = pup.effect_value;
+  switch (pup.effect_type) {
+    case 'free_devs':
+      next.team.developers += val;
+      break;
+    case 'free_designers':
+      next.team.designers += val;
+      break;
+    case 'free_marketers':
+      next.team.marketers += val;
+      break;
+    case 'free_all_roles':
+      next.team.developers += val;
+      next.team.designers += val;
+      next.team.marketers += val;
+      break;
+    case 'bonus_money':
+      next.dinero += val;
+      break;
+    case 'free_upgrade_dev':
+      if (val === 1) next.upgrades.push('dev_1');
+      else if (val === 2) next.upgrades.push('dev_2');
+      break;
+    case 'free_upgrade_dis':
+      if (val === 1) next.upgrades.push('dis_1');
+      else if (val === 2) next.upgrades.push('dis_2');
+      break;
+    case 'free_upgrade_mkt':
+      if (val === 1) next.upgrades.push('mkt_1');
+      else if (val === 2) next.upgrades.push('mkt_2');
+      break;
+  }
+
+  return next;
 }
 
 // ── Save / Load ───────────────────────────────────────
@@ -433,7 +576,11 @@ export function loadGame(): GameData | null {
   try {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as GameData;
+    const data = JSON.parse(raw) as GameData;
+    if (!data.lastPrestigeReputation && data.prestigeCount > 0) {
+      data.lastPrestigeReputation = Math.floor(100 * Math.pow(2, data.prestigeCount - 1));
+    }
+    return data;
   } catch {
     return null;
   }

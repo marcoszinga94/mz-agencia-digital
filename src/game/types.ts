@@ -13,6 +13,7 @@ export interface GameData {
   prestigePoints: number;
   prestigeCount: number;
   prestigeUpgrades: string[];
+  lastPrestigeReputation: number;
   ascended: boolean;
 }
 
@@ -38,7 +39,13 @@ export type PrestigeEffect =
   | 'prestige_cost_discount'
   | 'project_speed_bonus'
   | 'seg_ps'
-  | 'seg_trafico_mult';
+  | 'seg_trafico_mult'
+  | 'seg_dinero_mult'
+  | 'loc_click_power'
+  | 'pd_click_power'
+  | 'trafico_click_power'
+  | 'click_crit_chance'
+  | 'click_crit_mult';
 
 export interface Upgrade {
   id: string;

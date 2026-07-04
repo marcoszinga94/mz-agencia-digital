@@ -9,20 +9,35 @@ interface Props {
 const SAVE_KEY = 'agencia-save';
 
 function HowToPlayModal({ onClose }: { onClose: () => void }) {
+  const steps = [
+    { icon: '👆', title: 'Clicks', desc: 'Generá LoC, PD y Tráfico manualmente. Cada click también da dinero.' },
+    { icon: '⚡', title: 'Mejoras', desc: 'Potenciá tu generación de recursos y clicks.' },
+    { icon: '👥', title: 'Equipo', desc: 'Contratá desarrolladores, diseñadores y marketers para generar recursos pasivos.' },
+    { icon: '📋', title: 'Proyectos', desc: 'Invertí recursos para ganar dinero y reputación. Activá auto-repeat para encadenarlos.' },
+    { icon: '⭐', title: 'Prestigio', desc: 'Al llegar a la reputación necesaria, reiniciá tu progreso a cambio de PP para desbloquear habilidades.' },
+    { icon: '🌀', title: 'Ascensión', desc: 'Al dominar todas las habilidades base, ascendé a un nuevo plano con proyectos y skills exclusivos.' },
+  ];
+
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-lg w-full mx-4 shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
-        <h2 className="text-base font-bold text-text mb-3">📖 Cómo jugar</h2>
-        <ul className="space-y-2 text-xs text-text-muted">
-          <li><strong className="text-text">Clicks</strong> — Generá LoC, PD y Tráfico manualmente.</li>
-          <li><strong className="text-text">Proyectos</strong> — Invertí recursos para ganar dinero y reputación. Activá auto-repeat para encadenarlos.</li>
-          <li><strong className="text-text">Equipo</strong> — Contratá desarrolladores, diseñadores y marketers para generar recursos por segundo.</li>
-          <li><strong className="text-text">Mejoras</strong> — Potenciá tu generación de recursos.</li>
-          <li><strong className="text-text">Prestigio</strong> — Al llegar a cierta reputación, podés reiniciar tu progreso a cambio de PP para desbloquear habilidades en el Árbol de Skills.</li>
-          <li><strong className="text-accent">Ascensión</strong> — Al dominar todas las habilidades, ascenderás a un nuevo plano.</li>
-        </ul>
-        <button onClick={onClose} className="game-btn mt-4 px-4 py-1.5 rounded-lg bg-accent-blue text-white text-xs font-medium hover:bg-accent-blue/80 transition-all">
-          Cerrar
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
+      <div className="card p-6 max-w-lg w-full mx-4 animate-fade-in" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-2xl">📖</span>
+          <h2 className="text-lg font-bold text-text">Cómo jugar</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          {steps.map((step, i) => (
+            <div key={i} className="p-3 rounded-lg bg-surface-card/60 border border-surface-border/50">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-base">{step.icon}</span>
+                <span className="text-xs font-bold text-text">{step.title}</span>
+              </div>
+              <p className="text-[11px] text-text-muted leading-snug">{step.desc}</p>
+            </div>
+          ))}
+        </div>
+        <button onClick={onClose} className="btn btn-primary w-full px-4 py-2 text-xs">
+          Entendido
         </button>
       </div>
     </div>
@@ -92,27 +107,29 @@ export default function MenuButton({ data, onReset }: Props) {
 
   return (
     <>
-      <div ref={ref} className="relative">
+      <div ref={ref} className="relative z-[100]">
         <button
           onClick={() => setOpen(p => !p)}
-          className="game-btn px-2 py-1 rounded-lg bg-surface-card/50 border border-surface-border text-text-muted hover:bg-surface-hover hover:text-text transition-all duration-200 text-xs font-medium leading-tight"
+          className="btn btn-secondary px-2.5 py-1.5 text-xs"
         >
-          ⚙ Menú ▾
+          <span>⚙</span>
+          <span>Menú</span>
+          <span className="text-[10px]">▾</span>
         </button>
         {open && (
-          <div className="absolute right-0 top-full mt-1 w-48 rounded-lg bg-surface-card border border-surface-border shadow-xl z-50 py-1 overflow-hidden animate-fade-in">
-            <button onClick={() => { setOpen(false); setShowTutorial(true); }} className="w-full text-left px-3 py-2 text-xs text-text hover:bg-surface-hover hover:pl-4 transition-all duration-200">
-              📖 Cómo jugar
+          <div className="absolute right-0 top-full mt-1.5 w-52 rounded-xl card py-1.5 z-[100] animate-fade-in overflow-hidden">
+            <button onClick={() => { setOpen(false); setShowTutorial(true); }} className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-text hover:bg-surface-hover transition-colors">
+              <span>📖</span> Cómo jugar
             </button>
-            <button onClick={handleExport} className="w-full text-left px-3 py-2 text-xs text-text hover:bg-surface-hover hover:pl-4 transition-all duration-200">
-              📤 Exportar partida
+            <button onClick={handleExport} className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-text hover:bg-surface-hover transition-colors">
+              <span>📤</span> Exportar partida
             </button>
-            <button onClick={handleImport} className="w-full text-left px-3 py-2 text-xs text-text hover:bg-surface-hover hover:pl-4 transition-all duration-200">
-              📥 Importar partida
+            <button onClick={handleImport} className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-text hover:bg-surface-hover transition-colors">
+              <span>📥</span> Importar partida
             </button>
             <hr className="border-surface-border my-1" />
-            <button onClick={handleReset} className="w-full text-left px-3 py-2 text-xs text-red-400 hover:bg-surface-hover hover:pl-4 transition-all duration-200">
-              🗑 Resetear partida
+            <button onClick={handleReset} className="w-full flex items-center gap-2 text-left px-3 py-2 text-xs text-accent-red hover:bg-surface-hover transition-colors">
+              <span>🗑</span> Resetear partida
             </button>
           </div>
         )}

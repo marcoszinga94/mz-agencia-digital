@@ -14,43 +14,54 @@ export default function AscendModal({ data, onConfirm, onClose }: Props) {
   const branches = [...new Set(newSkills.map(s => s.branch))];
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-surface-card border border-surface-border rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl animate-fade-in" onClick={e => e.stopPropagation()}>
-        <h2 className="text-base font-bold text-text mb-1">🌀 Ascensión</h2>
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" onClick={onClose}>
+      <div className="card p-6 max-w-md w-full mx-4 animate-fade-in" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-2xl">🌀</span>
+          <h2 className="text-lg font-bold text-text">Ascensión</h2>
+        </div>
         <p className="text-xs text-text-muted mb-4">Has dominado todas las habilidades. Es hora de ascender.</p>
 
         <div className="space-y-3 mb-4">
           <div>
-            <div className="text-xs font-semibold text-text mb-1.5">🔓 Nuevos proyectos</div>
-            <div className="space-y-1">
+            <div className="section-title mb-2"><span className="text-accent-green">◆</span> Nuevos proyectos</div>
+            <div className="space-y-1.5">
               {newProjects.map(p => (
-                <div key={p.id} className="flex justify-between text-xs text-text-muted bg-surface-hover rounded px-2 py-1">
-                  <span>{p.name}</span>
-                  <span className="text-text-dim">{fmtNum(p.loc_required)} LoC / {fmtNum(p.work_required)} work</span>
+                <div key={p.id} className="flex justify-between items-center text-xs px-3 py-2 rounded-lg bg-surface-card/60 border border-surface-border/50">
+                  <span className="font-medium text-text">{p.name}</span>
+                  <span className="text-text-dim">{fmtNum(p.loc_required)} LoC · {fmtNum(p.work_required)} work</span>
                 </div>
               ))}
             </div>
           </div>
           <div>
-            <div className="text-xs font-semibold text-text mb-1.5">🌀 Nuevas habilidades ({newSkills.length})</div>
-            <div className="space-y-1">
+            <div className="section-title mb-2"><span className="text-accent-blue">◆</span> Nuevas habilidades ({newSkills.length})</div>
+            <div className="space-y-1.5">
               {branches.map(b => (
-                <div key={b} className="text-xs text-text-muted bg-surface-hover rounded px-2 py-1">
+                <div key={b} className="flex justify-between items-center text-xs px-3 py-2 rounded-lg bg-surface-card/60 border border-surface-border/50">
                   <span className="font-medium text-accent-blue">{b}</span>
-                  <span className="text-text-dim ml-2">{newSkills.filter(s => s.branch === b).length} habilidades</span>
+                  <span className="text-text-dim">{newSkills.filter(s => s.branch === b).length} habilidades</span>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <p className="text-xs text-accent-orange mb-4 font-medium">Se reiniciará TODO: recursos, upgrades, equipo, proyectos, PP y habilidades de prestigio base. Solo se conservan las habilidades de Ascensión.</p>
+        <p className="text-xs text-accent-orange mb-4 font-medium text-center">
+          Se reiniciará TODO excepto las habilidades de Ascensión.
+        </p>
 
         <div className="flex gap-2">
-          <button onClick={onClose} className="game-btn flex-1 px-4 py-1.5 rounded-lg bg-surface-hover text-text text-xs font-medium hover:brightness-110 transition-all">
+          <button onClick={onClose} className="btn btn-secondary flex-1 px-4 py-2 text-xs">
             Cancelar
           </button>
-          <button onClick={onConfirm} className="game-btn flex-1 px-4 py-1.5 rounded-lg bg-accent-blue text-white text-xs font-medium hover:bg-accent-blue/80 transition-all">
+          <button onClick={onConfirm} className="btn flex-1 px-4 py-2 text-xs"
+            style={{
+              background: 'linear-gradient(135deg, rgba(121, 192, 255, 0.2), rgba(188, 140, 255, 0.15))',
+              border: '1px solid rgba(121, 192, 255, 0.5)',
+              color: '#79c0ff'
+            }}
+          >
             ¡Ascender!
           </button>
         </div>
